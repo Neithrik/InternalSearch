@@ -21,8 +21,8 @@ class RelevanceScore(BaseModel):
     model_config = ConfigDict(extra='forbid')  # Forbid additional properties
     is_relevant: bool
 
-
 async def is_document_relevant(document: Document, question: str) -> bool:
+    print(f"Evaluating relevance for document from {document.link}")
     prompt = PROMPT.format(question=question, document=document.content)
     response = await make_openai_request(
         model="gpt-4o",

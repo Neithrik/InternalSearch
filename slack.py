@@ -3,9 +3,7 @@ from typing import List
 from slack_sdk import WebClient
 
 from models import Document, DocumentSource
-
-SLACK_TOKEN = os.getenv("SLACK_TOKEN", "")
-
+from config import SLACK_TOKEN
 def make_slack_search_request(queries: List[str]) -> list[Document]:
     client = WebClient(token=SLACK_TOKEN)
     

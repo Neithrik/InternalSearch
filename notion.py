@@ -1,9 +1,8 @@
 from typing import List
 from notion_client import Client
+from config import NOTION_TOKEN
 from models import Document, DocumentSource
 import os
-
-NOTION_TOKEN = os.getenv("NOTION_TOKEN")
 
 def extract_text_from_block(block):
     """Extract text content from different types of Notion blocks."""
