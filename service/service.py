@@ -6,10 +6,12 @@ from result_scorer import is_document_relevant
 from search_query_gen import generate_search_queries
 from slack import make_slack_search_request
 from notion import make_notion_search_request
+from flask_cors import CORS  # Add this import
 
 app = Flask(__name__)
+CORS(app)
 
-async def async_search(question: str) -> dict:
+async def async_search(question: str) -> str:
     queries = await generate_search_queries(question)
     slack_results = make_slack_search_request(queries.queries)
     notion_results = make_notion_search_request(queries.queries)
@@ -25,11 +27,7 @@ async def async_search(question: str) -> dict:
             relevant_results.append(result)
 
     response = await generate_response(relevant_results, question)
-    return {
-        "queries": queries.queries,
-        "relevant_results": [doc.model_dump_json() for doc in relevant_results],
-        "response": response.model_dump_json()
-    }
+    return response.model_dump_json()
 
 @app.route('/search', methods=['POST'])
 def search():

@@ -6,37 +6,40 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import SendIcon from '@mui/icons-material/Send';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { searchApi, SearchResponse } from './search.ts';
 
-interface GeneratedResponse {
-  response: string,
-  sources: string[]
-}
 
 interface ResponseProps {
-  data: GeneratedResponse
+  data?: SearchResponse
 }
 
 function Response({ data }: ResponseProps) {
+  if (!data) {
+    return null;
+  }
+
   return (<Box>
     Response: {data.response}
     <ul>
-      {data.sources.map(s => <li>source</li>)}
+      {data.sources.map((s, i) => <li key={i}>{s}</li>)}
     </ul>
   </Box>);
 }
 
+
 function App() {
   const [loading, setLoading] = React.useState(false);
-  const [responses, setResponses] = React.useState<GeneratedResponse[]>([]);
-  function startSearch() {
+  const [response, setResponse] = React.useState<SearchResponse>();
+  async function startSearch(question: string) {
     setLoading(true);
+    const response = await searchApi(question);
     setTimeout(() => {
-      showResults([{ response: "Response from [1] and [2].", sources: ["source 1", "source 2"] }])
+      showResults(response)
     }, 2000)
   }
-  function showResults(responses: GeneratedResponse[]) {
+  function showResults(response: SearchResponse) {
     setLoading(false);
-    setResponses(responses);
+    setResponse(response);
   }
 
   return (
@@ -64,7 +67,10 @@ function App() {
             placeholder="Enter your search query"
             variant="outlined" />
           <LoadingButton
-            onClick={startSearch}
+            onClick={(e) => {
+              const input = e.currentTarget.form?.querySelector('input') as HTMLInputElement;
+              startSearch(input.value);
+            }}
             endIcon={<SendIcon />}
             loading={loading}
             loadingPosition="end"
@@ -75,9 +81,7 @@ function App() {
         </Box>
 
         <Box>
-          {responses.map((response) => (
-            <Response data={response} />
-          ))}
+          <Response data={response} />
         </Box>
       </Container>
     </div>
