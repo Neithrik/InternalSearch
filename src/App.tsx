@@ -114,7 +114,7 @@ function App() {
               className="app-title"
               variant="h4"
               gutterBottom>
-              Search Assistant
+              Synthesia Search
             </Typography>
           </Box>
 
