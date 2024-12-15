@@ -1,17 +1,19 @@
 import os
 from typing import List
 from slack_sdk import WebClient
+import asyncio
 
 from models import Document, DocumentSource
 from config import SLACK_TOKEN
 
-def make_slack_search_request(queries: List[str]) -> list[Document]:
+async def make_slack_search_request(queries: List[str]) -> list[Document]:
     client = WebClient(token=SLACK_TOKEN)
     
     # Try queries from most specific to most general until we find results
     for query in queries:
         print(f"Trying query: {query}")
-        response = client.search_messages(query=query)
+        # Use asyncio.to_thread to run the synchronous slack API call in a separate thread
+        response = await asyncio.to_thread(client.search_messages, query=query)
         print(response)
 
         if response["ok"]:

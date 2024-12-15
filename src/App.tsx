@@ -8,12 +8,36 @@ import SendIcon from '@mui/icons-material/Send';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Link from '@mui/material/Link';
 import { searchApi, SearchResponse } from './search.ts';
+import Skeleton from '@mui/material/Skeleton';
 
 interface ResponseProps {
-  data?: SearchResponse
+  data?: SearchResponse;
+  loading?: boolean;
 }
 
-function Response({ data }: ResponseProps) {
+function ResponseSkeleton() {
+  return (
+    <Box className="response-container">
+      {/* Response text skeleton */}
+      <Skeleton variant="text" sx={{ fontSize: '1rem', mb: 1 }} />
+      <Skeleton variant="text" sx={{ fontSize: '1rem', mb: 1 }} />
+      <Skeleton variant="text" sx={{ fontSize: '1rem', mb: 3 }} width="60%" />
+
+      {/* Sources skeleton */}
+      <Box className="sources-container">
+        <Typography variant="subtitle2" color="textSecondary">Sources:</Typography>
+        {[1, 2].map((_, i) => (
+          <Box key={i} className="source-item">
+            <Box className="source-number">[{i + 1}]</Box>
+            <Skeleton variant="text" sx={{ fontSize: '0.875rem' }} width="80%" />
+          </Box>
+        ))}
+      </Box>
+    </Box>
+  );
+}
+
+function Response({ data, loading }: ResponseProps) {
   const [hoveredCitation, setHoveredCitation] = React.useState<number | null>(null);
 
   React.useEffect(() => {
@@ -26,6 +50,10 @@ function Response({ data }: ResponseProps) {
       document.removeEventListener('citation-hover', handleCitationHover as EventListener);
     };
   }, []);
+
+  if (loading) {
+    return <ResponseSkeleton />;
+  }
 
   if (!data) {
     return null;
@@ -149,7 +177,7 @@ function App() {
           </Box>
 
           <Box className="results-container">
-            <Response data={response} />
+            <Response data={response} loading={loading} />
           </Box>
         </Box>
       </Container>

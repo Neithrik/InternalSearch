@@ -3,6 +3,7 @@ from notion_client import Client
 from config import NOTION_TOKEN
 from models import Document, DocumentSource
 import os
+import asyncio
 
 def extract_text_from_block(block):
     """Extract text content from different types of Notion blocks."""
@@ -17,13 +18,14 @@ def extract_text_from_block(block):
     return ''  # Return empty string for unsupported block types
 
 
-def make_notion_search_request(queries: List[str]) -> list[Document]:
+async def make_notion_search_request(queries: List[str]) -> list[Document]:
     notion = Client(auth=NOTION_TOKEN)
     
     # Try queries from most specific to most general until we find results
     for query in queries:
         print(f"Trying query: {query}")
-        results = notion.search(query=query)
+        # Use asyncio.to_thread to run the synchronous notion API call in a separate thread
+        results = await asyncio.to_thread(notion.search, query=query)
         
         if results['results']:  # If we found any matches
             documents = []
@@ -33,7 +35,10 @@ def make_notion_search_request(queries: List[str]) -> list[Document]:
                 
                 # Get page content
                 page_id = page['id']
-                page_content = notion.blocks.children.list(block_id=page_id)
+                page_content = await asyncio.to_thread(
+                    notion.blocks.children.list,
+                    block_id=page_id
+                )
                 
                 # Extract text from all blocks
                 content_parts = []

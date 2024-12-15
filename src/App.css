@@ -129,3 +129,12 @@
   background-color: #2563eb;
   color: white;
 }
+
+.source-item .MuiSkeleton-root {
+  flex: 1;
+}
+
+.response-container .MuiSkeleton-root {
+  background-color: rgba(0, 0, 0, 0.06);
+  border-radius: 4px;
+}
