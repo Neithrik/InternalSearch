@@ -4,6 +4,7 @@ from slack_sdk import WebClient
 
 from models import Document, DocumentSource
 from config import SLACK_TOKEN
+
 def make_slack_search_request(queries: List[str]) -> list[Document]:
     client = WebClient(token=SLACK_TOKEN)
     
